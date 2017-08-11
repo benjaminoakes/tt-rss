@@ -1,14 +1,27 @@
 <?php
+  function parse_heroku_postgres_url_string($url_string) {
+    $parts = parse_url($url_string);
+    return [
+      'username'	=> $parts['user'],
+      'password'	=> $parts['pass'],
+      'hostname'	=> $parts['host'],
+      'database'	=> substr($parts['path'], 1),
+      'port'		=> $parts['port'],
+    ];
+  }
+
+  $heroku_db = parse_heroku_postgres_url_string($_ENV['DATABASE_URL']);
+
 	// *******************************************
 	// *** Database configuration (important!) ***
 	// *******************************************
 
 	define('DB_TYPE', "pgsql"); // or mysql
-	define('DB_HOST', $_ENV["TTRSS_DB_HOST"]);
-	define('DB_USER', $_ENV["TTRSS_DB_USER"]);
-	define('DB_NAME', $_ENV["TTRSS_DB_NAME"]);
-	define('DB_PASS', $_ENV["TTRSS_DB_PASS"]);
-	define('DB_PORT', $_ENV["TTRSS_DB_PORT"]); // usually 5432 for PostgreSQL, 3306 for MySQL
+	define('DB_HOST', $heroku_db['hostname']);
+	define('DB_USER', $heroku_db['username']);
+	define('DB_NAME', $heroku_db['database']);
+	define('DB_PASS', $heroku_db['password']);
+	define('DB_PORT', $heroku_db['port']); // usually 5432 for PostgreSQL, 3306 for MySQL
 
 	define('MYSQL_CHARSET', 'UTF8');
 	// Connection charset for MySQL. If you have a legacy database and/or experience
